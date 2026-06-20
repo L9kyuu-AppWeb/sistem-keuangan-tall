@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FamiBalance UI</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#f0f0f0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;display:flex;justify-content:center;align-items:flex-start;padding:16px}
+.phone{width:100%;max-width:390px;min-height:780px;background:#fff;border-radius:32px;overflow:hidden;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.15)}
+.page{display:none;flex-direction:column;min-height:780px}
+.page.active{display:flex}
+.nav-pill{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:390px;background:#fff;border-top:0.5px solid #e5e5e5;display:flex;padding:8px 0 20px;z-index:10}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;color:#aaa;font-size:10px;padding:4px}
+.nav-item.on{color:#7C3AED}
+.nav-item i{font-size:22px}
+.topbar{padding:52px 20px 16px;background:#7C3AED;color:#fff}
+.topbar h1{font-size:20px;font-weight:600}
+.topbar p{font-size:13px;opacity:.8;margin-top:2px}
+.chip{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:11px;color:#fff;margin-top:8px}
+.card{background:#fff;border:0.5px solid #e5e5e5;border-radius:16px;padding:16px;margin-bottom:12px}
+.card-purple{background:#6D28D9;color:#fff;border:none}
+.card-purple p{opacity:.9}
+.stat-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:#F8F5FF;border-radius:12px;padding:12px}
+.stat label{font-size:11px;color:#7C3AED;display:block;margin-bottom:4px}
+.stat .val{font-size:18px;font-weight:600;color:#2d2d2d}
+.stat .sub{font-size:11px;color:#888;margin-top:2px}
+.prog-wrap{margin-bottom:8px}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:#555;margin-bottom:4px}
+.prog-bar{height:7px;background:#F0EBFF;border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:#7C3AED;border-radius:4px}
+.txn{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:0.5px solid #f0f0f0}
+.txn:last-child{border-bottom:none}
+.txn-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.txn-icon.in{background:#ECFDF5;color:#059669}
+.txn-icon.out{background:#FEF2F2;color:#EF4444}
+.txn-icon.move{background:#EFF6FF;color:#3B82F6}
+.txn-body{flex:1}
+.txn-body p{font-size:14px;color:#1a1a1a;font-weight:500}
+.txn-body span{font-size:12px;color:#888}
+.txn-amt{font-weight:600;font-size:14px}
+.txn-amt.in{color:#059669}
+.txn-amt.out{color:#EF4444}
+.wallet-chip{display:flex;align-items:center;gap:8px;background:#F8F5FF;border:0.5px solid #DDD6FE;border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer}
+.wallet-chip i{font-size:22px;color:#7C3AED}
+.wallet-chip .wname{font-size:14px;font-weight:500;color:#1a1a1a}
+.wallet-chip .wbal{font-size:12px;color:#888}
+.wallet-chip .wamt{margin-left:auto;font-size:16px;font-weight:600;color:#1a1a1a}
+.fab{position:fixed;bottom:76px;right:calc(50% - 195px + 16px);width:52px;height:52px;background:#7C3AED;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:28px;box-shadow:0 4px 16px rgba(124,58,237,.4);cursor:pointer;border:none;z-index:10}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;border:none}
+.btn-primary{background:#7C3AED;color:#fff}
+.btn-outline{background:#fff;color:#7C3AED;border:1.5px solid #7C3AED}
+.btn-gray{background:#f4f4f4;color:#555}
+.form-label{font-size:13px;color:#555;margin-bottom:5px;display:block}
+.form-input{width:100%;padding:12px 14px;border:1px solid #ddd;border-radius:10px;font-size:15px;color:#1a1a1a;outline:none}
+.form-input:focus{border-color:#7C3AED}
+.form-group{margin-bottom:14px}
+.seg{display:flex;background:#F4F4F4;border-radius:10px;padding:3px;margin-bottom:16px}
+.seg-btn{flex:1;padding:8px;border-radius:8px;font-size:13px;font-weight:500;color:#888;text-align:center;cursor:pointer;border:none;background:transparent}
+.seg-btn.on{background:#7C3AED;color:#fff}
+.lock-overlay{border-radius:12px;overflow:hidden;position:relative}
+.blur-content{filter:blur(4px);pointer-events:none;user-select:none}
+.lock-badge{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(255,255,255,.75);gap:8px}
+.lock-badge i{font-size:28px;color:#7C3AED}
+.lock-badge p{font-size:13px;color:#5B21B6;font-weight:600;text-align:center;padding:0 24px}
+.badge{font-size:11px;padding:2px 8px;border-radius:20px;font-weight:600}
+.badge-pro{background:#FEF3C7;color:#92400E}
+.badge-free{background:#F0EBFF;color:#5B21B6}
+.sec-title{font-size:16px;font-weight:600;color:#1a1a1a;margin-bottom:12px}
+.pw-hero{background:#6D28D9;padding:32px 24px 24px;color:#fff;text-align:center}
+.pw-hero h2{font-size:24px;font-weight:700;margin-bottom:6px}
+.pw-hero p{font-size:14px;opacity:.85}
+.pw-feat{display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:0.5px solid #f0f0f0}
+.pw-feat:last-child{border-bottom:none}
+.pw-feat i{font-size:20px;color:#7C3AED;flex-shrink:0;margin-top:2px}
+.pw-feat div p{font-size:14px;font-weight:500;color:#1a1a1a}
+.pw-feat div span{font-size:12px;color:#888}
+.tip{background:#FFFBEB;border:0.5px solid #FDE68A;border-radius:10px;padding:12px;margin-bottom:12px;font-size:13px;color:#92400E;display:flex;gap:8px;align-items:flex-start}
+.tip i{font-size:18px;color:#F59E0B;flex-shrink:0;margin-top:1px}
+.gold-card{background:#92400E;color:#fff;border-radius:16px;padding:18px;margin-bottom:12px}
+.gold-card .gl{font-size:12px;opacity:.75;margin-bottom:4px}
+.gold-card .gv{font-size:22px;font-weight:700}
+.avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;color:#fff}
+.scroll-area{overflow-y:auto;flex:1;padding:0 20px 100px}
+.scroll-area::-webkit-scrollbar{display:none}
+#p-splash{background:#7C3AED;align-items:center;justify-content:center;text-align:center;gap:16px}
+.splash-icon{width:80px;height:80px;background:rgba(255,255,255,.2);border-radius:24px;display:flex;align-items:center;justify-content:center;margin:0 auto}
+.splash-icon i{font-size:44px;color:#fff}
+.cat-btn{text-align:center;padding:10px 6px;border-radius:10px;background:#f5f5f5;cursor:pointer}
+.cat-btn.on{background:#F0EBFF}
+.cat-btn i{font-size:22px;color:#888;display:block;margin-bottom:4px}
+.cat-btn.on i{color:#7C3AED}
+.cat-btn span{font-size:10px;color:#888}
+.cat-btn.on span{color:#5B21B6}
+</style>
+</head>
+<body>
+<div class="phone">
+
+<!-- SPLASH -->
+<div class="page active" id="p-splash">
+  <div class="splash-icon"><i class="ti ti-home-heart"></i></div>
+  <div>
+    <h1 style="font-size:30px;font-weight:700;color:#fff;margin-bottom:6px">FamiBalance</h1>
+    <p style="color:rgba(255,255,255,.75);font-size:15px">Buku kas digital keluarga Anda</p>
+  </div>
+  <div style="margin-top:24px;display:flex;flex-direction:column;gap:10px;width:100%;padding:0 32px">
+    <button class="btn" style="background:#fff;color:#7C3AED;font-weight:700" onclick="go('p-login')">Masuk</button>
+    <button class="btn" style="background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.5)" onclick="go('p-register')">Daftar Gratis</button>
+  </div>
+  <p style="color:rgba(255,255,255,.45);font-size:11px;margin-top:16px">Bukan aplikasi transfer atau perbankan</p>
+</div>
+
+<!-- LOGIN -->
+<div class="page" id="p-login">
+  <div style="background:#7C3AED;padding:52px 24px 32px">
+    <button onclick="go('p-splash')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;gap:4px"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <h2 style="font-size:22px;font-weight:600;color:#fff">Selamat datang</h2>
+    <p style="color:rgba(255,255,255,.75);font-size:13px;margin-top:4px">Masuk ke buku kas keluarga Anda</p>
+  </div>
+  <div style="padding:28px 24px;flex:1">
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="nama@email.com"></div>
+    <div class="form-group"><label class="form-label">Kata Sandi</label><input class="form-input" type="password" placeholder="••••••••"></div>
+    <p style="text-align:right;font-size:13px;color:#7C3AED;margin-bottom:24px;cursor:pointer">Lupa kata sandi?</p>
+    <button class="btn btn-primary" onclick="go('p-dashboard')">Masuk</button>
+    <div style="display:flex;align-items:center;gap:12px;margin:20px 0"><div style="flex:1;height:0.5px;background:#e5e5e5"></div><span style="font-size:12px;color:#aaa">atau</span><div style="flex:1;height:0.5px;background:#e5e5e5"></div></div>
+    <button class="btn btn-gray"><i class="ti ti-brand-google"></i> Masuk dengan Google</button>
+    <p style="text-align:center;font-size:13px;color:#888;margin-top:24px">Belum punya akun? <span style="color:#7C3AED;cursor:pointer" onclick="go('p-register')">Daftar</span></p>
+  </div>
+</div>
+
+<!-- REGISTER -->
+<div class="page" id="p-register">
+  <div style="background:#7C3AED;padding:52px 24px 32px">
+    <button onclick="go('p-splash')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:16px;display:flex;align-items:center;gap:4px"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <h2 style="font-size:22px;font-weight:600;color:#fff">Buat Akun Baru</h2>
+    <p style="color:rgba(255,255,255,.75);font-size:13px;margin-top:4px">Gratis selamanya, upgrade kapan saja</p>
+  </div>
+  <div class="scroll-area" style="padding-top:24px">
+    <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" placeholder="Budi Santoso"></div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="budi@email.com"></div>
+    <div class="form-group"><label class="form-label">Kata Sandi</label><input class="form-input" type="password" placeholder="Min. 8 karakter"></div>
+    <div class="form-group"><label class="form-label">Konfirmasi Kata Sandi</label><input class="form-input" type="password" placeholder="Ulangi kata sandi"></div>
+    <div class="tip"><i class="ti ti-info-circle"></i><span>FamiBalance adalah pencatat keuangan digital. Kami tidak menyimpan data rekening bank atau memindahkan uang riil.</span></div>
+    <button class="btn btn-primary" style="margin-top:8px" onclick="go('p-dashboard')">Buat Akun Gratis</button>
+    <p style="text-align:center;font-size:12px;color:#aaa;margin-top:14px">Dengan mendaftar, Anda setuju dengan Syarat & Ketentuan kami.</p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="page" id="p-dashboard">
+  <div class="topbar">
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <p style="font-size:13px;opacity:.75">Selamat pagi,</p>
+        <h1>Keluarga Santoso</h1>
+      </div>
+      <button onclick="go('p-notif')" style="background:rgba(255,255,255,.2);border:none;border-radius:10px;width:38px;height:38px;color:#fff;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center"><i class="ti ti-bell"></i></button>
+    </div>
+    <div class="chip"><i class="ti ti-crown" style="font-size:12px"></i> Akun Gratis</div>
+  </div>
+  <div class="scroll-area">
+    <div class="card card-purple" style="margin-top:16px">
+      <p style="font-size:13px;opacity:.8">Total Kekayaan Bersih</p>
+      <p style="font-size:30px;font-weight:700;margin:4px 0;color:#fff">Rp 14.750.000</p>
+      <div style="display:flex;gap:12px;margin-top:10px">
+        <div style="flex:1;background:rgba(255,255,255,.15);border-radius:8px;padding:8px">
+          <p style="font-size:11px;opacity:.75;color:#fff">Pemasukan Bulan Ini</p>
+          <p style="font-size:15px;font-weight:600;color:#fff">Rp 8.500.000</p>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.15);border-radius:8px;padding:8px">
+          <p style="font-size:11px;opacity:.75;color:#fff">Pengeluaran</p>
+          <p style="font-size:15px;font-weight:600;color:#fff">Rp 3.250.000</p>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <p class="sec-title" style="margin:0">Anggaran Bulan Ini</p>
+        <span class="badge badge-free">1/1 Free</span>
+      </div>
+      <div class="prog-wrap">
+        <div class="prog-label"><span>Total Pengeluaran</span><span style="color:#555;font-weight:500">Rp 3,25jt / Rp 5jt</span></div>
+        <div class="prog-bar"><div class="prog-fill" style="width:65%"></div></div>
+      </div>
+      <p style="font-size:12px;color:#888;margin-top:4px">Sisa anggaran: <b style="color:#7C3AED">Rp 1.750.000</b></p>
+      <button class="btn btn-outline" style="margin-top:12px;padding:10px;font-size:13px" onclick="go('p-paywall')"><i class="ti ti-crown"></i> Budget per Kategori (Pro)</button>
+    </div>
+    <div class="tip"><i class="ti ti-bulb"></i><span><b>Tips hari ini:</b> Pengeluaran "Jajan" Anda naik 20% bulan ini. Pertimbangkan untuk mengeremnya!</span></div>
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <p class="sec-title" style="margin:0">Transaksi Terakhir</p>
+        <span style="font-size:13px;color:#7C3AED;cursor:pointer" onclick="go('p-txn-list')">Lihat semua</span>
+      </div>
+      <div class="txn"><div class="txn-icon in"><i class="ti ti-arrow-down-circle"></i></div><div class="txn-body"><p>Gaji Budi</p><span>Hari ini · BCA Tabungan</span></div><div class="txn-amt in">+8.500.000</div></div>
+      <div class="txn"><div class="txn-icon out"><i class="ti ti-shopping-cart"></i></div><div class="txn-body"><p>Belanja Sayur</p><span>Kemarin · Uang Tunai</span></div><div class="txn-amt out">-85.000</div></div>
+      <div class="txn"><div class="txn-icon out"><i class="ti ti-bolt"></i></div><div class="txn-body"><p>Tagihan Listrik PLN</p><span>19 Jun · Rekening BCA</span></div><div class="txn-amt out">-320.000</div></div>
+      <div class="txn"><div class="txn-icon move"><i class="ti ti-arrows-exchange"></i></div><div class="txn-body"><p>Setor ke BCA</p><span>18 Jun · Transfer Virtual</span></div><div class="txn-amt" style="color:#3B82F6">Pindah</div></div>
+    </div>
+  </div>
+  <button class="fab" onclick="go('p-add-txn')"><i class="ti ti-plus"></i></button>
+  <div class="nav-pill">
+    <div class="nav-item on" onclick="go('p-dashboard')"><i class="ti ti-home"></i><span>Beranda</span></div>
+    <div class="nav-item" onclick="go('p-wallets')"><i class="ti ti-wallet"></i><span>Dompet</span></div>
+    <div class="nav-item" onclick="go('p-gold')"><i class="ti ti-star"></i><span>Emas</span></div>
+    <div class="nav-item" onclick="go('p-family')"><i class="ti ti-users"></i><span>Keluarga</span></div>
+    <div class="nav-item" onclick="go('p-profile')"><i class="ti ti-user-circle"></i><span>Profil</span></div>
+  </div>
+</div>
+
+<!-- DOMPET VIRTUAL -->
+<div class="page" id="p-wallets">
+  <div class="topbar">
+    <h1>Dompet Virtual</h1>
+    <p>Kelola pos-pos saldo Anda</p>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <div class="stat-row">
+      <div class="stat"><label>Total Saldo</label><div class="val">Rp 14,75jt</div></div>
+      <div class="stat"><label>Pos Aktif</label><div class="val">2 / 2</div><div class="sub">Batas Free</div></div>
+    </div>
+    <div class="wallet-chip" onclick="go('p-wallet-detail')">
+      <i class="ti ti-cash"></i>
+      <div><div class="wname">Uang Tunai</div><div class="wbal">Diperbarui hari ini</div></div>
+      <div class="wamt">Rp 1.250.000</div>
+    </div>
+    <div class="wallet-chip" onclick="go('p-wallet-detail')">
+      <i class="ti ti-building-bank"></i>
+      <div><div class="wname">BCA Tabungan</div><div class="wbal">Diperbarui hari ini</div></div>
+      <div class="wamt">Rp 13.500.000</div>
+    </div>
+    <div class="card" style="border:1.5px dashed #DDD6FE;background:#FAFAFF;text-align:center;padding:20px;cursor:pointer" onclick="go('p-paywall')">
+      <i class="ti ti-lock" style="font-size:28px;color:#7C3AED"></i>
+      <p style="font-size:14px;font-weight:600;color:#5B21B6;margin-top:8px">Tambah Dompet Baru</p>
+      <p style="font-size:12px;color:#888;margin-top:4px">Batas Free: 2 dompet. Upgrade Pro untuk dompet tak terbatas.</p>
+      <button class="btn btn-primary" style="margin-top:12px;padding:10px;font-size:13px" onclick="event.stopPropagation();go('p-paywall')"><i class="ti ti-crown"></i> Upgrade ke Pro</button>
+    </div>
+    <div class="card" style="margin-top:4px">
+      <p class="sec-title">Pindah Saldo Antar Dompet</p>
+      <div class="form-group"><label class="form-label">Dari</label><select class="form-input"><option>Uang Tunai (Rp 1.250.000)</option><option>BCA Tabungan</option></select></div>
+      <div class="form-group"><label class="form-label">Ke</label><select class="form-input"><option>BCA Tabungan (Rp 13.500.000)</option><option>Uang Tunai</option></select></div>
+      <div class="form-group"><label class="form-label">Jumlah</label><input class="form-input" placeholder="Rp 0"></div>
+      <button class="btn btn-primary"><i class="ti ti-arrows-exchange"></i> Pindahkan Saldo</button>
+    </div>
+  </div>
+  <button class="fab" onclick="go('p-add-txn')"><i class="ti ti-plus"></i></button>
+  <div class="nav-pill">
+    <div class="nav-item" onclick="go('p-dashboard')"><i class="ti ti-home"></i><span>Beranda</span></div>
+    <div class="nav-item on" onclick="go('p-wallets')"><i class="ti ti-wallet"></i><span>Dompet</span></div>
+    <div class="nav-item" onclick="go('p-gold')"><i class="ti ti-star"></i><span>Emas</span></div>
+    <div class="nav-item" onclick="go('p-family')"><i class="ti ti-users"></i><span>Keluarga</span></div>
+    <div class="nav-item" onclick="go('p-profile')"><i class="ti ti-user-circle"></i><span>Profil</span></div>
+  </div>
+</div>
+
+<!-- WALLET DETAIL -->
+<div class="page" id="p-wallet-detail">
+  <div style="background:#7C3AED;padding:52px 20px 20px">
+    <button onclick="go('p-wallets')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="width:48px;height:48px;background:rgba(255,255,255,.2);border-radius:14px;display:flex;align-items:center;justify-content:center"><i class="ti ti-building-bank" style="font-size:26px;color:#fff"></i></div>
+      <div><p style="color:rgba(255,255,255,.75);font-size:12px">Rekening Tabungan</p><h2 style="font-size:20px;font-weight:600;color:#fff">BCA Tabungan</h2></div>
+    </div>
+    <p style="color:rgba(255,255,255,.7);font-size:13px">Saldo Saat Ini</p>
+    <p style="font-size:32px;font-weight:700;color:#fff">Rp 13.500.000</p>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <div class="seg">
+      <button class="seg-btn on">Semua</button>
+      <button class="seg-btn" onclick="this.parentNode.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Masuk</button>
+      <button class="seg-btn" onclick="this.parentNode.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Keluar</button>
+    </div>
+    <p style="font-size:12px;color:#888;margin-bottom:8px">Juni 2025</p>
+    <div class="txn"><div class="txn-icon in"><i class="ti ti-arrow-down-circle"></i></div><div class="txn-body"><p>Gaji Budi</p><span>20 Jun</span></div><div class="txn-amt in">+8.500.000</div></div>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-bolt"></i></div><div class="txn-body"><p>Tagihan Listrik PLN</p><span>19 Jun</span></div><div class="txn-amt out">-320.000</div></div>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-device-tv"></i></div><div class="txn-body"><p>Netflix</p><span>15 Jun</span></div><div class="txn-amt out">-186.000</div></div>
+    <div class="txn"><div class="txn-icon move"><i class="ti ti-arrows-exchange"></i></div><div class="txn-body"><p>Terima dari Tunai</p><span>10 Jun</span></div><div class="txn-amt" style="color:#3B82F6">+500.000</div></div>
+  </div>
+</div>
+
+<!-- TAMBAH TRANSAKSI -->
+<div class="page" id="p-add-txn">
+  <div style="background:#7C3AED;padding:52px 20px 24px">
+    <button onclick="go('p-dashboard')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px"><i class="ti ti-x"></i> Batal</button>
+    <h2 style="font-size:20px;font-weight:600;color:#fff">Catat Transaksi</h2>
+    <div class="seg" style="margin-top:16px;margin-bottom:0">
+      <button class="seg-btn on" id="tab-out" onclick="setType('out')">Pengeluaran</button>
+      <button class="seg-btn" id="tab-in" onclick="setType('in')">Pemasukan</button>
+      <button class="seg-btn" id="tab-move" onclick="setType('move')">Pindah</button>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:20px">
+    <div class="form-group">
+      <label class="form-label">Jumlah</label>
+      <div style="position:relative">
+        <span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#888;font-size:15px">Rp</span>
+        <input class="form-input" style="padding-left:36px;font-size:20px;font-weight:600" type="number" placeholder="0">
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Dompet</label><select class="form-input"><option>Uang Tunai</option><option>BCA Tabungan</option></select></div>
+    <div class="form-group">
+      <label class="form-label">Kategori</label>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <div class="cat-btn on" onclick="selCat(this)"><i class="ti ti-shopping-cart"></i><span>Belanja</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-bolt"></i><span>Tagihan</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-soup"></i><span>Makan</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-car"></i><span>Transport</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-device-tv"></i><span>Hiburan</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-heart-rate-monitor"></i><span>Kesehatan</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-school"></i><span>Pendidikan</span></div>
+        <div class="cat-btn" onclick="selCat(this)"><i class="ti ti-dots"></i><span>Lainnya</span></div>
+      </div>
+    </div>
+    <div class="form-group"><label class="form-label">Catatan (Opsional)</label><input class="form-input" placeholder="Contoh: Beli sayur di pasar..."></div>
+    <div class="form-group"><label class="form-label">Tanggal</label><input class="form-input" type="date" value="2025-06-20"></div>
+    <button class="btn btn-primary" onclick="go('p-dashboard')"><i class="ti ti-check"></i> Simpan Transaksi</button>
+  </div>
+</div>
+
+<!-- DOMPET EMAS -->
+<div class="page" id="p-gold">
+  <div class="topbar" style="background:#92400E">
+    <h1>Dompet Emas</h1>
+    <p>Portofolio aset emas keluarga</p>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <div class="gold-card">
+      <div class="gl">Total Gramasi Emas</div>
+      <div class="gv">12,5 gram</div>
+      <div style="display:flex;gap:10px;margin-top:12px">
+        <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:8px">
+          <div class="gl">Harga Beli Rata-rata</div>
+          <div style="font-size:14px;font-weight:600;color:#fff">Rp 985.000/gr</div>
+        </div>
+        <div style="flex:1;background:rgba(0,0,0,.2);border-radius:8px;padding:8px">
+          <div class="gl">Total Modal</div>
+          <div style="font-size:14px;font-weight:600;color:#fff">Rp 12.312.500</div>
+        </div>
+      </div>
+    </div>
+    <div class="card lock-overlay">
+      <div class="blur-content">
+        <p class="sec-title">Nilai Pasar & Keuntungan</p>
+        <div class="stat-row" style="margin-bottom:0">
+          <div class="stat"><label>Harga Emas Hari Ini</label><div class="val">Rp 1.085.000</div><div class="sub">per gram</div></div>
+          <div class="stat"><label>Nilai Pasar</label><div class="val">Rp 13,5jt</div></div>
+        </div>
+        <div style="height:80px;background:#f0f0f0;border-radius:10px;margin-top:12px"></div>
+      </div>
+      <div class="lock-badge">
+        <i class="ti ti-crown"></i>
+        <p>Aktifkan Pro untuk harga emas real-time &amp; grafik keuntungan otomatis</p>
+        <button class="btn btn-primary" style="width:auto;padding:10px 20px;font-size:13px" onclick="go('p-paywall')">Coba Pro Gratis</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="sec-title">Catat Transaksi Emas</p>
+      <div class="seg"><button class="seg-btn on">Beli</button><button class="seg-btn" onclick="this.parentNode.querySelectorAll('.seg-btn').forEach(b=>b.classList.remove('on'));this.classList.add('on')">Jual</button></div>
+      <div class="form-group"><label class="form-label">Jumlah (Gram)</label><input class="form-input" type="number" placeholder="0,5" step="0.1"></div>
+      <div class="form-group"><label class="form-label">Harga Beli per Gram</label><div style="position:relative"><span style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#888;font-size:15px">Rp</span><input class="form-input" style="padding-left:36px" type="number" placeholder="985000"></div></div>
+      <div class="form-group"><label class="form-label">Tanggal Beli</label><input class="form-input" type="date" value="2025-06-20"></div>
+      <button class="btn btn-primary"><i class="ti ti-check"></i> Simpan</button>
+    </div>
+    <div class="card">
+      <p class="sec-title">Riwayat Transaksi Emas</p>
+      <div class="txn"><div class="txn-icon" style="background:#FFFBEB;color:#D97706"><i class="ti ti-star"></i></div><div class="txn-body"><p>Beli Emas</p><span>15 Mar 2025 · 5 gram</span></div><div class="txn-amt out">-Rp 5.000.000</div></div>
+      <div class="txn"><div class="txn-icon" style="background:#FFFBEB;color:#D97706"><i class="ti ti-star"></i></div><div class="txn-body"><p>Beli Emas</p><span>10 Jan 2025 · 7,5 gram</span></div><div class="txn-amt out">-Rp 7.312.500</div></div>
+    </div>
+  </div>
+  <div class="nav-pill">
+    <div class="nav-item" onclick="go('p-dashboard')"><i class="ti ti-home"></i><span>Beranda</span></div>
+    <div class="nav-item" onclick="go('p-wallets')"><i class="ti ti-wallet"></i><span>Dompet</span></div>
+    <div class="nav-item on"><i class="ti ti-star"></i><span>Emas</span></div>
+    <div class="nav-item" onclick="go('p-family')"><i class="ti ti-users"></i><span>Keluarga</span></div>
+    <div class="nav-item" onclick="go('p-profile')"><i class="ti ti-user-circle"></i><span>Profil</span></div>
+  </div>
+</div>
+
+<!-- KELUARGA -->
+<div class="page" id="p-family">
+  <div class="topbar">
+    <h1>Bagi Buku Keluarga</h1>
+    <p>Sinkronisasi pencatatan bersama pasangan</p>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <div class="card" style="background:#F8F5FF;border:1.5px solid #DDD6FE">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="avatar" style="background:#7C3AED"><i class="ti ti-user" style="font-size:18px;color:#fff"></i></div>
+        <div><p style="font-size:15px;font-weight:600;color:#1a1a1a">Budi Santoso</p><p style="font-size:12px;color:#888">Anda (Pemilik Buku)</p></div>
+        <span class="badge badge-free" style="margin-left:auto">Free</span>
+      </div>
+      <div style="text-align:center;padding:24px 16px;border:1.5px dashed #DDD6FE;border-radius:12px">
+        <i class="ti ti-lock" style="font-size:36px;color:#7C3AED"></i>
+        <p style="font-size:15px;font-weight:600;color:#5B21B6;margin-top:10px">Hubungkan Akun Pasangan</p>
+        <p style="font-size:13px;color:#888;margin-top:6px;line-height:1.6">Fitur Family Sync memungkinkan Anda dan pasangan mencatat pengeluaran bersama secara real-time dari perangkat masing-masing.</p>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="go('p-paywall')"><i class="ti ti-crown"></i> Upgrade ke Pro</button>
+      </div>
+    </div>
+    <div class="card">
+      <p class="sec-title">Cara Kerja Family Sync</p>
+      <div class="pw-feat"><i class="ti ti-user-plus"></i><div><p>Hubungkan akun pasangan</p><span>Kirim undangan lewat email atau kode unik</span></div></div>
+      <div class="pw-feat"><i class="ti ti-pencil"></i><div><p>Catat dari perangkat masing-masing</p><span>Suami catat di HP-nya, istri di HP-nya</span></div></div>
+      <div class="pw-feat"><i class="ti ti-refresh"></i><div><p>Sinkronisasi otomatis real-time</p><span>Saldo & anggaran langsung terupdate bersama</span></div></div>
+      <div class="pw-feat"><i class="ti ti-chart-pie"></i><div><p>Satu laporan keuangan keluarga</p><span>Tidak perlu transfer catatan manual lagi</span></div></div>
+    </div>
+  </div>
+  <div class="nav-pill">
+    <div class="nav-item" onclick="go('p-dashboard')"><i class="ti ti-home"></i><span>Beranda</span></div>
+    <div class="nav-item" onclick="go('p-wallets')"><i class="ti ti-wallet"></i><span>Dompet</span></div>
+    <div class="nav-item" onclick="go('p-gold')"><i class="ti ti-star"></i><span>Emas</span></div>
+    <div class="nav-item on"><i class="ti ti-users"></i><span>Keluarga</span></div>
+    <div class="nav-item" onclick="go('p-profile')"><i class="ti ti-user-circle"></i><span>Profil</span></div>
+  </div>
+</div>
+
+<!-- PROFIL -->
+<div class="page" id="p-profile">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="avatar" style="background:rgba(255,255,255,.3);width:52px;height:52px;font-size:18px">BS</div>
+      <div><h1 style="font-size:18px">Budi Santoso</h1><p>budi@email.com</p></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:12px;align-items:center">
+      <span class="badge badge-free" style="font-size:12px;padding:4px 10px">Akun Gratis</span>
+      <button class="btn btn-primary" style="padding:6px 14px;font-size:12px;width:auto" onclick="go('p-paywall')"><i class="ti ti-crown" style="font-size:14px"></i> Upgrade Pro</button>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <div class="card">
+      <p class="sec-title">Ringkasan Penggunaan</p>
+      <div class="stat-row">
+        <div class="stat"><label>Dompet Virtual</label><div class="val">2 / 2</div><div class="sub">Batas Free</div></div>
+        <div class="stat"><label>Total Transaksi</label><div class="val">47</div><div class="sub">Bulan ini</div></div>
+      </div>
+    </div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <div onclick="go('p-notif')" style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+        <i class="ti ti-bell" style="font-size:20px;color:#7C3AED"></i><span style="font-size:14px;flex:1">Notifikasi</span><i class="ti ti-chevron-right" style="color:#ccc"></i>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid #f0f0f0;cursor:pointer" onclick="go('p-paywall')">
+        <i class="ti ti-crown" style="font-size:20px;color:#D97706"></i><span style="font-size:14px;flex:1">Akses Pro &amp; Berlangganan</span><i class="ti ti-chevron-right" style="color:#ccc"></i>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+        <i class="ti ti-lock" style="font-size:20px;color:#555"></i><span style="font-size:14px;flex:1">Ubah Kata Sandi</span><i class="ti ti-chevron-right" style="color:#ccc"></i>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:0.5px solid #f0f0f0;cursor:pointer">
+        <i class="ti ti-download" style="font-size:20px;color:#555"></i>
+        <span style="font-size:14px;flex:1">Ekspor Data <span class="badge badge-pro" style="margin-left:4px">Pro</span></span>
+        <i class="ti ti-chevron-right" style="color:#ccc"></i>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer">
+        <i class="ti ti-help-circle" style="font-size:20px;color:#555"></i><span style="font-size:14px;flex:1">Pusat Bantuan</span><i class="ti ti-chevron-right" style="color:#ccc"></i>
+      </div>
+    </div>
+    <button class="btn" style="background:#FEF2F2;color:#EF4444;border:none;margin-top:4px" onclick="go('p-splash')"><i class="ti ti-logout"></i> Keluar</button>
+  </div>
+  <div class="nav-pill">
+    <div class="nav-item" onclick="go('p-dashboard')"><i class="ti ti-home"></i><span>Beranda</span></div>
+    <div class="nav-item" onclick="go('p-wallets')"><i class="ti ti-wallet"></i><span>Dompet</span></div>
+    <div class="nav-item" onclick="go('p-gold')"><i class="ti ti-star"></i><span>Emas</span></div>
+    <div class="nav-item" onclick="go('p-family')"><i class="ti ti-users"></i><span>Keluarga</span></div>
+    <div class="nav-item on"><i class="ti ti-user-circle"></i><span>Profil</span></div>
+  </div>
+</div>
+
+<!-- PAYWALL -->
+<div class="page" id="p-paywall">
+  <div class="pw-hero">
+    <button onclick="go('p-profile')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;display:flex;align-items:center;gap:4px;margin-bottom:20px"><i class="ti ti-x"></i> Tutup</button>
+    <i class="ti ti-crown" style="font-size:40px;color:#FCD34D"></i>
+    <h2>FamiBalance Pro</h2>
+    <p>Kelola keuangan keluarga tanpa batas</p>
+    <div style="display:flex;gap:8px;margin-top:16px;justify-content:center">
+      <div id="pl-m" onclick="setPlan('m')" style="flex:1;max-width:140px;background:rgba(255,255,255,.2);border:2px solid #fff;border-radius:12px;padding:12px;cursor:pointer;text-align:center">
+        <div style="font-size:11px;opacity:.8;color:#fff">Bulanan</div>
+        <div style="font-size:20px;font-weight:700;color:#fff">Rp 29rb</div>
+        <div style="font-size:10px;opacity:.7;color:#fff">/bulan</div>
+      </div>
+      <div id="pl-y" onclick="setPlan('y')" style="flex:1;max-width:140px;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.3);border-radius:12px;padding:12px;cursor:pointer;text-align:center;position:relative">
+        <div style="position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#FCD34D;color:#92400E;font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap">HEMAT 30%</div>
+        <div style="font-size:11px;opacity:.8;color:#fff">Tahunan</div>
+        <div style="font-size:20px;font-weight:700;color:#fff">Rp 249rb</div>
+        <div style="font-size:10px;opacity:.7;color:#fff">/tahun</div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <p class="sec-title">Yang Anda dapatkan</p>
+    <div class="pw-feat"><i class="ti ti-wallet"></i><div><p>Dompet Virtual Tak Terbatas</p><span>Tambah rekening, e-wallet, kas sebanyak yang Anda mau</span></div></div>
+    <div class="pw-feat"><i class="ti ti-star"></i><div><p>Harga Emas Real-Time &amp; Analisis</p><span>Grafik gain/loss otomatis setiap hari</span></div></div>
+    <div class="pw-feat"><i class="ti ti-users"></i><div><p>Family Sync — Bagi Buku Berdua</p><span>Satu buku kas, dua perangkat, sinkron real-time</span></div></div>
+    <div class="pw-feat"><i class="ti ti-chart-pie"></i><div><p>Multi-Anggaran per Kategori</p><span>Budget terpisah untuk makan, tagihan, hiburan, dll.</span></div></div>
+    <div class="pw-feat"><i class="ti ti-tag"></i><div><p>Kategori Kustom Tak Terbatas</p><span>Buat dan kelola kategori sesuai kebutuhan keluarga</span></div></div>
+    <div class="pw-feat"><i class="ti ti-camera"></i><div><p>Lampiran Struk/Nota Digital</p><span>Arsip foto struk di setiap transaksi</span></div></div>
+    <div class="pw-feat"><i class="ti ti-download"></i><div><p>Ekspor Excel, CSV &amp; PDF</p><span>Laporan keuangan tahunan untuk perencanaan</span></div></div>
+    <div class="pw-feat"><i class="ti ti-ad-off"></i><div><p>100% Bebas Iklan</p><span>Pengalaman bersih tanpa gangguan</span></div></div>
+    <button class="btn btn-primary" style="margin-top:16px;padding:16px;font-size:16px"><i class="ti ti-crown"></i> Mulai 7 Hari Gratis</button>
+    <p style="text-align:center;font-size:12px;color:#aaa;margin-top:10px">Batalkan kapan saja. Tanpa komitmen.</p>
+    <div style="margin-top:16px;padding:12px;background:#F8F5FF;border-radius:10px;display:flex;gap:8px">
+      <i class="ti ti-shield-check" style="color:#7C3AED;font-size:20px;flex-shrink:0;margin-top:2px"></i>
+      <p style="font-size:12px;color:#5B21B6">FamiBalance adalah aplikasi pencatatan saja. Pembayaran berlangganan diproses aman. Kami tidak menyimpan data rekening Anda.</p>
+    </div>
+  </div>
+</div>
+
+<!-- NOTIFIKASI -->
+<div class="page" id="p-notif">
+  <div style="background:#7C3AED;padding:52px 20px 20px">
+    <button onclick="go('p-dashboard')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <h2 style="font-size:20px;font-weight:600;color:#fff">Notifikasi</h2>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <p style="font-size:12px;color:#aaa;margin-bottom:8px">Hari ini</p>
+    <div class="card" style="padding:12px;margin-bottom:10px">
+      <div style="display:flex;gap:10px">
+        <div style="width:36px;height:36px;background:#ECFDF5;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-arrow-down-circle" style="color:#059669;font-size:18px"></i></div>
+        <div><p style="font-size:14px;font-weight:500">Pemasukan baru dicatat</p><p style="font-size:12px;color:#888;margin-top:2px">Gaji Budi sebesar Rp 8.500.000 berhasil dicatat ke BCA Tabungan.</p><p style="font-size:11px;color:#aaa;margin-top:4px">Baru saja</p></div>
+      </div>
+    </div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:8px">Kemarin</p>
+    <div class="card" style="padding:12px;margin-bottom:10px">
+      <div style="display:flex;gap:10px">
+        <div style="width:36px;height:36px;background:#FEF3C7;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-alert-triangle" style="color:#D97706;font-size:18px"></i></div>
+        <div><p style="font-size:14px;font-weight:500">Anggaran hampir habis</p><p style="font-size:12px;color:#888;margin-top:2px">Anggaran bulanan Anda sudah terpakai 65%. Tersisa Rp 1.750.000.</p><p style="font-size:11px;color:#aaa;margin-top:4px">Kemarin, 19:30</p></div>
+      </div>
+    </div>
+    <div class="card" style="padding:12px;border:1.5px solid #DDD6FE">
+      <div style="display:flex;gap:10px">
+        <div style="width:36px;height:36px;background:#F0EBFF;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="ti ti-crown" style="color:#7C3AED;font-size:18px"></i></div>
+        <div><p style="font-size:14px;font-weight:500">Coba Pro 7 hari gratis</p><p style="font-size:12px;color:#888;margin-top:2px">Hubungkan akun istri dan bagi buku kas bersama. Coba Pro tanpa biaya!</p><button style="margin-top:8px;font-size:12px;color:#7C3AED;background:none;border:none;cursor:pointer;padding:0;font-weight:600" onclick="go('p-paywall')">Pelajari selengkapnya</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TXN LIST -->
+<div class="page" id="p-txn-list">
+  <div style="background:#7C3AED;padding:52px 20px 20px">
+    <button onclick="go('p-dashboard')" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px"><i class="ti ti-arrow-left"></i> Kembali</button>
+    <h2 style="font-size:20px;font-weight:600;color:#fff">Semua Transaksi</h2>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <input style="flex:1;background:rgba(255,255,255,.2);border:none;border-radius:10px;padding:10px 12px;color:#fff;font-size:13px" placeholder="Cari transaksi...">
+      <button style="background:rgba(255,255,255,.2);border:none;border-radius:10px;padding:10px 12px;color:#fff;cursor:pointer"><i class="ti ti-filter" style="font-size:18px"></i></button>
+    </div>
+  </div>
+  <div class="scroll-area" style="padding-top:16px">
+    <div class="stat-row">
+      <div class="stat" style="background:#ECFDF5"><label style="color:#059669">Total Masuk</label><div class="val" style="color:#059669">+Rp 8,5jt</div></div>
+      <div class="stat" style="background:#FEF2F2"><label style="color:#EF4444">Total Keluar</label><div class="val" style="color:#EF4444">-Rp 3,25jt</div></div>
+    </div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:8px">20 Juni 2025</p>
+    <div class="txn"><div class="txn-icon in"><i class="ti ti-arrow-down-circle"></i></div><div class="txn-body"><p>Gaji Budi</p><span>BCA Tabungan · Pemasukan</span></div><div class="txn-amt in">+8.500.000</div></div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:8px;margin-top:12px">19 Juni 2025</p>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-shopping-cart"></i></div><div class="txn-body"><p>Belanja Sayur</p><span>Uang Tunai · Belanja</span></div><div class="txn-amt out">-85.000</div></div>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-bolt"></i></div><div class="txn-body"><p>Tagihan Listrik PLN</p><span>BCA Tabungan · Tagihan</span></div><div class="txn-amt out">-320.000</div></div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:8px;margin-top:12px">18 Juni 2025</p>
+    <div class="txn"><div class="txn-icon move"><i class="ti ti-arrows-exchange"></i></div><div class="txn-body"><p>Setor ke BCA</p><span>Uang Tunai ke BCA</span></div><div class="txn-amt" style="color:#3B82F6">500.000</div></div>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-soup"></i></div><div class="txn-body"><p>Makan Siang Sekeluarga</p><span>Uang Tunai · Makan</span></div><div class="txn-amt out">-185.000</div></div>
+    <p style="font-size:12px;color:#aaa;margin-bottom:8px;margin-top:12px">15 Juni 2025</p>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-device-tv"></i></div><div class="txn-body"><p>Netflix</p><span>BCA Tabungan · Hiburan</span></div><div class="txn-amt out">-186.000</div></div>
+    <div class="txn"><div class="txn-icon out"><i class="ti ti-car"></i></div><div class="txn-body"><p>Bensin</p><span>Uang Tunai · Transport</span></div><div class="txn-amt out">-150.000</div></div>
+    <div class="card" style="margin-top:12px;text-align:center;background:#F8F5FF;border:1.5px dashed #DDD6FE">
+      <i class="ti ti-download" style="font-size:28px;color:#7C3AED"></i>
+      <p style="font-size:14px;font-weight:600;color:#5B21B6;margin-top:8px">Ekspor ke Excel / PDF</p>
+      <p style="font-size:12px;color:#888;margin-top:4px">Fitur ekspor tersedia untuk akun Pro.</p>
+      <button class="btn btn-primary" style="margin-top:12px;padding:10px;font-size:13px" onclick="go('p-paywall')"><i class="ti ti-crown"></i> Upgrade Pro</button>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  var t=document.getElementById(id);
+  if(t){t.classList.add('active');}
+}
+function setType(t){
+  ['out','in','move'].forEach(function(x){
+    document.getElementById('tab-'+x).classList.toggle('on',x===t);
+  });
+}
+function selCat(el){
+  document.querySelectorAll('.cat-btn').forEach(function(b){b.classList.remove('on');});
+  el.classList.add('on');
+}
+function setPlan(p){
+  var m=document.getElementById('pl-m'),y=document.getElementById('pl-y');
+  if(p==='m'){
+    m.style.background='rgba(255,255,255,.2)';m.style.borderColor='#fff';
+    y.style.background='rgba(255,255,255,.1)';y.style.borderColor='rgba(255,255,255,.3)';
+  } else {
+    y.style.background='rgba(255,255,255,.2)';y.style.borderColor='#fff';
+    m.style.background='rgba(255,255,255,.1)';m.style.borderColor='rgba(255,255,255,.3)';
+  }
+}
+</script>
+</body>
+</html>
