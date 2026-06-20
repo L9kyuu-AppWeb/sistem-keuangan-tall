@@ -17,6 +17,7 @@ use App\Livewire\Transaction\Create as TransactionCreate;
 use App\Livewire\Transaction\Index as TransactionIndex;
 use App\Livewire\Wallet\Detail as WalletDetail;
 use App\Livewire\Wallet\Index as WalletIndex;
+use App\Http\Controllers\MidtransController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -48,4 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/change-password', ChangePassword::class)->name('change-password');
     Route::get('/app/help', Help::class)->name('help');
     Route::get('/app/paywall', Paywall::class)->name('paywall');
+    Route::post('/midtrans/token', [MidtransController::class, 'createToken'])->name('midtrans.token');
+    Route::get('/midtrans/callback', [MidtransController::class, 'callback'])->name('paywall.callback');
 });
+
+Route::post('/midtrans/webhook', [MidtransController::class, 'webhook'])->name('midtrans.webhook');

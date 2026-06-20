@@ -63,6 +63,11 @@ class User extends Authenticatable
         return $this->belongsTo(FamilyGroup::class);
     }
 
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
     public function isPro(): bool
     {
         return $this->is_pro && $this->pro_expires_at?->isFuture();
