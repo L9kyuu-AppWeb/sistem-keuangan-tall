@@ -2,6 +2,15 @@ Berikut adalah **Product Requirement Document (PRD)** yang telah disusun ulang d
 
 Dokumen ini dirancang dengan pendekatan profesional dan secara eksplisit menegaskan bahwa aplikasi ini adalah **platform SaaS murni pencatatan keuangan (bookkeeping/financial tracker)**, bukan aplikasi *fintech* transaksional.
 
+Resume this session with:
+  hermes --resume 20260620_181857_2ce08a
+  hermes -c "Indonesian Greeting and Help Offer #7"
+
+Session:        20260620_181857_2ce08a
+Title:          Indonesian Greeting and Help Offer #7
+Duration:       6h 49m 54s
+Messages:       257 (24 user, 209 tool calls)
+
 ---
 
 # PRODUCT REQUIREMENT DOCUMENT (PRD)
