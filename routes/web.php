@@ -4,7 +4,9 @@ use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Budget;
 use App\Livewire\Categories;
+use App\Livewire\ChangePassword;
 use App\Livewire\Dashboard;
+use App\Livewire\Export;
 use App\Livewire\Family;
 use App\Livewire\Gold;
 use App\Livewire\Notification;
@@ -33,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/app/budget', Budget::class)->name('budget');
     Route::get('/app/categories', Categories::class)->name('categories');
+    Route::get('/app/export', Export::class)->name('export');
     Route::get('/app/wallets', WalletIndex::class)->name('wallets');
     Route::get('/app/wallet/{wallet}', WalletDetail::class)->name('wallet.detail');
     Route::get('/app/transactions/create', TransactionCreate::class)->name('transaction.create');
@@ -41,5 +44,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/family', Family::class)->name('family');
     Route::get('/app/profile', Profile::class)->name('profile');
     Route::get('/app/notifications', Notification::class)->name('notifications');
+    Route::get('/app/change-password', ChangePassword::class)->name('change-password');
     Route::get('/app/paywall', Paywall::class)->name('paywall');
 });

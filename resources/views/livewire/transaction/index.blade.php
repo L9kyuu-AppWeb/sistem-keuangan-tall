@@ -55,7 +55,11 @@
             <p class="text-sm text-gray-400 text-center py-8">Belum ada transaksi.</p>
         @endforelse
 
-        @if (!auth()->user()->isPro())
+        @if (auth()->user()->isPro())
+            <a href="{{ route('export') }}" class="flex items-center justify-center gap-2 w-full py-3 rounded-xl text-sm font-semibold text-[#970747] border border-[#970747] bg-white mt-4 text-decoration-none">
+                <i class="ti ti-download"></i> Ekspor Data
+            </a>
+        @else
             <div class="bg-purple-50 border border-dashed border-purple-200 rounded-2xl text-center p-5 mt-4">
                 <i class="ti ti-download text-purple-600 text-3xl"></i>
                 <p class="text-sm font-semibold text-purple-700 mt-2">Ekspor ke Excel / PDF</p>

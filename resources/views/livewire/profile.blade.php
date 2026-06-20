@@ -50,24 +50,32 @@
                 @endif
                 <i class="ti ti-chevron-right text-gray-300"></i>
             </a>
+            <a href="{{ route('family') }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                <i class="ti ti-users text-purple-600 text-xl"></i>
+                <span class="text-sm flex-1">Family Sync</span>
+                @if (!auth()->user()->isPro())
+                    <span class="text-xs bg-amber-100 text-amber-700 font-semibold rounded-full px-1.5 py-0.5">Pro</span>
+                @endif
+                <i class="ti ti-chevron-right text-gray-300"></i>
+            </a>
             <a href="{{ route('paywall') }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
                 <i class="ti ti-crown text-amber-600 text-xl"></i>
                 <span class="text-sm flex-1">Akses Pro & Berlangganan</span>
                 <i class="ti ti-chevron-right text-gray-300"></i>
             </a>
-            <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
-                <i class="ti ti-lock text-gray-500 text-xl"></i>
+            <a href="{{ route('change-password') }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                <i class="ti ti-lock text-purple-600 text-xl"></i>
                 <span class="text-sm flex-1">Ubah Kata Sandi</span>
                 <i class="ti ti-chevron-right text-gray-300"></i>
-            </div>
-            <div class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
-                <i class="ti ti-download text-gray-500 text-xl"></i>
-                <span class="text-sm flex-1">
-                    Ekspor Data
-                    <span class="text-xs bg-amber-100 text-amber-700 font-semibold rounded-full px-1.5 py-0.5 ml-1">Pro</span>
-                </span>
+            </a>
+            <a href="{{ route('export') }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                <i class="ti ti-download text-purple-600 text-xl"></i>
+                <span class="text-sm flex-1">Ekspor Data</span>
+                @if (!auth()->user()->isPro())
+                    <span class="text-xs bg-amber-100 text-amber-700 font-semibold rounded-full px-1.5 py-0.5">Pro</span>
+                @endif
                 <i class="ti ti-chevron-right text-gray-300"></i>
-            </div>
+            </a>
             <div class="flex items-center gap-3 px-4 py-3.5">
                 <i class="ti ti-help-circle text-gray-500 text-xl"></i>
                 <span class="text-sm flex-1">Pusat Bantuan</span>

@@ -3,7 +3,7 @@
 @endphp
 <div class="page active" style="min-height:780px">
     <div class="topbar">
-        <a href="{{ route('dashboard') }}" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px">
+        <a href="{{ route('profile') }}" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:14px;cursor:pointer;margin-bottom:12px;display:flex;align-items:center;gap:4px">
             <i class="ti ti-arrow-left"></i> Kembali
         </a>
         <h1>Kategori</h1>

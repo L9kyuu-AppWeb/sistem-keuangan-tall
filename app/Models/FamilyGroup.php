@@ -4,26 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Support\Str;
 
 class FamilyGroup extends Model
 {
-    protected $fillable = [
-        'name',
-        'code',
-    ];
-
-    protected static function boot(): void
-    {
-        parent::boot();
-
-        static::creating(function (self $familyGroup) {
-            $familyGroup->code = strtoupper(Str::random(8));
-        });
-    }
+    protected $fillable = ['name', 'code'];
 
     public function members(): HasMany
     {
-        return $this->hasMany(User::class);
+        return $this->hasMany(User::class, 'family_group_id');
+    }
+
+    public function owner()
+    {
+        return $this->members()->where('family_role', 'owner')->first();
+    }
+
+    public static function generateCode(): string
+    {
+        do {
+            $code = strtoupper(substr(md5(uniqid(mt_rand(), true)), 0, 6));
+        } while (self::where('code', $code)->exists());
+
+        return $code;
     }
 }

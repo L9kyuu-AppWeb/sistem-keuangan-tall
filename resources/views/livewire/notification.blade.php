@@ -1,6 +1,6 @@
 <div class="flex flex-col min-h-full">
     <div class="bg-purple-700 px-5 pt-13 pb-5">
-        <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-1 text-white/70 text-sm mb-3">
+        <a href="{{ route('profile') }}" class="inline-flex items-center gap-1 text-white/70 text-sm mb-3">
             <i class="ti ti-arrow-left"></i> Kembali
         </a>
         <h2 class="text-xl font-semibold text-white">Notifikasi</h2>
