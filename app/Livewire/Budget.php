@@ -36,11 +36,6 @@ class Budget extends Component
 
     public function save(): void
     {
-        if (!auth()->user()->isPro()) {
-            session()->flash('error', 'Fitur ini hanya untuk akun Pro.');
-            return;
-        }
-
         $this->validate([
             'generalAmount' => 'required|numeric|min:0',
             'categoryAmounts' => 'array',
@@ -50,30 +45,34 @@ class Budget extends Component
         $month = now()->format('Y-m');
         $user = auth()->user();
 
-        // Save general budget
+        // Save general budget — everyone can
         BudgetModel::updateOrCreate(
             ['user_id' => $user->id, 'month' => $month, 'category_id' => null],
             ['amount' => $this->generalAmount]
         );
 
-        // Save per-category budgets
-        foreach ($this->categoryAmounts as $catId => $amount) {
-            if ($amount > 0) {
-                BudgetModel::updateOrCreate(
-                    ['user_id' => $user->id, 'month' => $month, 'category_id' => $catId],
-                    ['amount' => $amount]
-                );
-            } else {
-                BudgetModel::where('user_id', $user->id)
-                    ->where('month', $month)
-                    ->where('category_id', $catId)
-                    ->delete();
+        // Save per-category budgets — Pro only
+        if ($user->isPro()) {
+            foreach ($this->categoryAmounts as $catId => $amount) {
+                if ($amount > 0) {
+                    BudgetModel::updateOrCreate(
+                        ['user_id' => $user->id, 'month' => $month, 'category_id' => $catId],
+                        ['amount' => $amount]
+                    );
+                } else {
+                    BudgetModel::where('user_id', $user->id)
+                        ->where('month', $month)
+                        ->where('category_id', $catId)
+                        ->delete();
+                }
             }
+            session()->flash('success', 'Anggaran berhasil disimpan!');
+        } else {
+            session()->flash('success', 'Anggaran umum disimpan. Budget per kategori untuk Pro.');
         }
 
         $this->editing = false;
         $this->loadBudgets();
-        session()->flash('success', 'Anggaran berhasil disimpan!');
     }
 
     public function render()

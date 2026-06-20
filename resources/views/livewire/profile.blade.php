@@ -42,6 +42,14 @@
                 <span class="text-sm flex-1">Notifikasi</span>
                 <i class="ti ti-chevron-right text-gray-300"></i>
             </a>
+            <a href="{{ route('categories') }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
+                <i class="ti ti-tag text-purple-600 text-xl"></i>
+                <span class="text-sm flex-1">Kategori</span>
+                @if (!auth()->user()->isPro())
+                    <span class="text-xs bg-amber-100 text-amber-700 font-semibold rounded-full px-1.5 py-0.5">Pro</span>
+                @endif
+                <i class="ti ti-chevron-right text-gray-300"></i>
+            </a>
             <a href="{{ route('paywall') }}" class="flex items-center gap-3 px-4 py-3.5 border-b border-gray-100">
                 <i class="ti ti-crown text-amber-600 text-xl"></i>
                 <span class="text-sm flex-1">Akses Pro & Berlangganan</span>

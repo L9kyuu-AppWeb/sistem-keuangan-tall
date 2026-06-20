@@ -88,6 +88,9 @@
             </p>
             <a href="{{ route('budget') }}" class="flex items-center justify-center gap-2 w-full mt-3 py-2.5 rounded-xl text-sm font-semibold text-[#970747] border border-[#970747] bg-white">
                 <i class="ti ti-chart-pie"></i> Atur Anggaran
+                @if (!auth()->user()->isPro())
+                    <span class="text-xs bg-amber-100 text-amber-700 font-semibold rounded-full px-1.5 py-0.5">Pro</span>
+                @endif
             </a>
         </div>
 

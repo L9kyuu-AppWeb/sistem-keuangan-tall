@@ -3,6 +3,7 @@
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Budget;
+use App\Livewire\Categories;
 use App\Livewire\Dashboard;
 use App\Livewire\Family;
 use App\Livewire\Gold;
@@ -31,6 +32,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/app/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/app/budget', Budget::class)->name('budget');
+    Route::get('/app/categories', Categories::class)->name('categories');
     Route::get('/app/wallets', WalletIndex::class)->name('wallets');
     Route::get('/app/wallet/{wallet}', WalletDetail::class)->name('wallet.detail');
     Route::get('/app/transactions/create', TransactionCreate::class)->name('transaction.create');

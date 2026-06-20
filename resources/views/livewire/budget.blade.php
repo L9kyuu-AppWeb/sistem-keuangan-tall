@@ -124,9 +124,14 @@
         <div class="card">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
                 <p class="sec-title" style="margin:0">Anggaran per Kategori</p>
-                @if (!auth()->user()->isPro())
-                    <span class="badge badge-free">Pro</span>
-                @endif
+                <div style="display:flex;align-items:center;gap:6px">
+                    @if (!auth()->user()->isPro())
+                        <span class="badge badge-free">Pro</span>
+                    @endif
+                    <a href="{{ route('categories') }}" style="color:var(--brand);font-size:16px;text-decoration:none" title="Atur Kategori">
+                        <i class="ti ti-settings"></i>
+                    </a>
+                </div>
             </div>
 
             @if (!auth()->user()->isPro())
