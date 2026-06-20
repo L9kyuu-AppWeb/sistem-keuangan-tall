@@ -157,6 +157,13 @@ class Index extends Component
         $walletCount = $wallets->count();
         $limit = auth()->user()->walletLimit();
         $atLimit = $walletCount >= $limit;
+        $freeLimit = 2;
+
+        // Mark wallets beyond free limit as locked
+        $wallets = $wallets->map(function ($wallet, $index) use ($freeLimit) {
+            $wallet->is_locked = !auth()->user()->isPro() && $index >= $freeLimit;
+            return $wallet;
+        });
 
         return view('livewire.wallet.index', [
             'wallets' => $wallets,

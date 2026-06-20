@@ -77,29 +77,49 @@
 
             {{-- WALLET CHIP --}}
             @else
-                <div class="wallet-chip">
-                    <i class="ti ti-{{ $wallet->icon }}"></i>
-                    <div style="flex:1;min-width:0">
-                        <div class="wname" style="{{ !$wallet->is_active ? 'color:#aaa;text-decoration:line-through' : '' }}">{{ $wallet->name }}</div>
-                        <div class="wbal">{{ !$wallet->is_active ? 'Nonaktif' : \Carbon\Carbon::parse($wallet->updated_at)->diffForHumans() }}</div>
-                    </div>
-                    <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
-                        <div class="wamt">Rp {{ number_format($wallet->balance, 0, ',', '.') }}</div>
-                        <div style="display:flex;gap:4px">
-                            <button wire:click="edit({{ $wallet->id }})" title="Edit"
-                                style="background:none;border:none;color:#970747;font-size:13px;cursor:pointer;padding:2px 4px;line-height:1">
-                                <i class="ti ti-pencil"></i>
-                            </button>
-                            <button wire:click="confirmDelete({{ $wallet->id }})" title="Hapus"
-                                style="background:none;border:none;color:#EF4444;font-size:13px;cursor:pointer;padding:2px 4px;line-height:1">
-                                <i class="ti ti-trash"></i>
-                            </button>
+                @if ($wallet->is_locked ?? false)
+                    <div class="wallet-chip" style="position:relative;overflow:hidden;pointer-events:none">
+                        <i class="ti ti-{{ $wallet->icon }}" style="filter:blur(2px)"></i>
+                        <div style="flex:1;min-width:0;filter:blur(2px)">
+                            <div class="wname">{{ $wallet->name }}</div>
+                            <div class="wbal">Terkunci — Fitur Pro</div>
+                        </div>
+                        <div style="text-align:right;filter:blur(2px)">
+                            <div class="wamt">Rp {{ number_format($wallet->balance, 0, ',', '.') }}</div>
+                        </div>
+                        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.7);border-radius:12px">
+                            <div style="text-align:center">
+                                <i class="ti ti-lock" style="font-size:20px;color:#970747"></i>
+                                <p style="font-size:11px;font-weight:600;color:#970747;margin-top:4px">Fitur Pro</p>
+                                <a href="{{ route('paywall') }}" style="display:inline-block;font-size:10px;padding:3px 10px;background:#970747;color:#fff;border-radius:8px;text-decoration:none;margin-top:4px">Upgrade</a>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <a href="{{ route('wallet.detail', $wallet) }}" style="display:block;text-align:right;font-size:11px;color:#970747;margin:-6px 6px 2px 0;text-decoration:none">
-                    Lihat detail →
-                </a>
+                @else
+                    <div class="wallet-chip">
+                        <i class="ti ti-{{ $wallet->icon }}"></i>
+                        <div style="flex:1;min-width:0">
+                            <div class="wname" style="{{ !$wallet->is_active ? 'color:#aaa;text-decoration:line-through' : '' }}">{{ $wallet->name }}</div>
+                            <div class="wbal">{{ !$wallet->is_active ? 'Nonaktif' : \Carbon\Carbon::parse($wallet->updated_at)->diffForHumans() }}</div>
+                        </div>
+                        <div style="text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+                            <div class="wamt">Rp {{ number_format($wallet->balance, 0, ',', '.') }}</div>
+                            <div style="display:flex;gap:4px">
+                                <button wire:click="edit({{ $wallet->id }})" title="Edit"
+                                    style="background:none;border:none;color:#970747;font-size:13px;cursor:pointer;padding:2px 4px;line-height:1">
+                                    <i class="ti ti-pencil"></i>
+                                </button>
+                                <button wire:click="confirmDelete({{ $wallet->id }})" title="Hapus"
+                                    style="background:none;border:none;color:#EF4444;font-size:13px;cursor:pointer;padding:2px 4px;line-height:1">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <a href="{{ route('wallet.detail', $wallet) }}" style="display:block;text-align:right;font-size:11px;color:#970747;margin:-6px 6px 2px 0;text-decoration:none">
+                        Lihat detail →
+                    </a>
+                @endif
             @endif
         @endforeach
 
