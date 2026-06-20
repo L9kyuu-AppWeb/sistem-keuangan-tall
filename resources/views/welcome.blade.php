@@ -29,6 +29,7 @@
     </style>
 </head>
 <body>
+<div style="max-width:430px;margin:0 auto;min-height:100vh;background:#fff;box-shadow:0 0 40px rgba(0,0,0,.06)">
 
 {{-- HERO --}}
 <section style="background:#970747;padding:48px 20px 60px;text-align:center;position:relative;overflow:hidden">
@@ -272,5 +273,6 @@
     <p style="font-size:10px;color:#bbb;margin-top:8px">© {{ date('Y') }} FamiBalance. All rights reserved.</p>
 </footer>
 
+</div>
 </body>
 </html>
