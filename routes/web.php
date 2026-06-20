@@ -9,6 +9,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Export;
 use App\Livewire\Family;
 use App\Livewire\Gold;
+use App\Livewire\Help;
 use App\Livewire\Notification;
 use App\Livewire\Paywall;
 use App\Livewire\Profile;
@@ -45,5 +46,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/app/profile', Profile::class)->name('profile');
     Route::get('/app/notifications', Notification::class)->name('notifications');
     Route::get('/app/change-password', ChangePassword::class)->name('change-password');
+    Route::get('/app/help', Help::class)->name('help');
     Route::get('/app/paywall', Paywall::class)->name('paywall');
 });

@@ -76,11 +76,11 @@
                 @endif
                 <i class="ti ti-chevron-right text-gray-300"></i>
             </a>
-            <div class="flex items-center gap-3 px-4 py-3.5">
-                <i class="ti ti-help-circle text-gray-500 text-xl"></i>
+            <a href="{{ route('help') }}" class="flex items-center gap-3 px-4 py-3.5">
+                <i class="ti ti-help-circle text-purple-600 text-xl"></i>
                 <span class="text-sm flex-1">Pusat Bantuan</span>
                 <i class="ti ti-chevron-right text-gray-300"></i>
-            </div>
+            </a>
         </div>
 
         <button wire:click="logout" class="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl text-sm font-semibold bg-red-50 text-red-500 mt-3 border-none cursor-pointer">
