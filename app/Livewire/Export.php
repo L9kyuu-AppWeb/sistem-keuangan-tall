@@ -3,12 +3,13 @@
 namespace App\Livewire;
 
 use Livewire\Component;
-use App\Models\Transaction;
 
 class Export extends Component
 {
     public string $format = 'csv';
+
     public string $type = 'all'; // all, income, expense
+
     public string $period = 'this_month'; // this_month, last_month, this_year, all
 
     private function getFilteredTransactions()
@@ -25,16 +26,16 @@ class Export extends Component
         switch ($this->period) {
             case 'this_month':
                 $q->whereMonth('date', now()->month)
-                  ->whereYear('date', now()->year);
+                    ->whereYear('date', now()->year);
                 break;
             case 'last_month':
                 $q->whereMonth('date', now()->subMonth()->month)
-                  ->whereYear('date', now()->subMonth()->year);
+                    ->whereYear('date', now()->subMonth()->year);
                 break;
             case 'this_year':
                 $q->whereYear('date', now()->year);
                 break;
-            // 'all' = no filter
+                // 'all' = no filter
         }
 
         return $q->get();
@@ -42,21 +43,22 @@ class Export extends Component
 
     public function download()
     {
-        if (!auth()->user()->isPro()) {
+        if (! auth()->user()->isPro()) {
             session()->flash('error', 'Ekspor hanya untuk akun Pro.');
+
             return;
         }
 
         $txns = $this->getFilteredTransactions();
         $user = auth()->user();
-        $periodLabel = match($this->period) {
+        $periodLabel = match ($this->period) {
             'this_month' => now()->locale('id')->isoFormat('MMMM Y'),
             'last_month' => now()->subMonth()->locale('id')->isoFormat('MMMM Y'),
             'this_year' => now()->year,
             'all' => 'Semua Waktu',
         };
 
-        $rows = $txns->map(fn($t) => [
+        $rows = $txns->map(fn ($t) => [
             'Tanggal' => $t->date->format('d/m/Y'),
             'Jenis' => $t->type === 'income' ? 'Pemasukan' : ($t->type === 'expense' ? 'Pengeluaran' : 'Transfer'),
             'Deskripsi' => $t->description ?? '-',
@@ -65,7 +67,7 @@ class Export extends Component
             'Jumlah' => $t->type === 'expense' ? -$t->amount : $t->amount,
         ]);
 
-        $filename = 'FamiBalance_' . $this->type . '_' . str_replace(' ', '_', $periodLabel);
+        $filename = 'FamiBalance_'.$this->type.'_'.str_replace(' ', '_', $periodLabel);
 
         switch ($this->format) {
             case 'csv':
@@ -110,12 +112,12 @@ class Export extends Component
                 $amt = $row['Jumlah'];
                 $color = $amt >= 0 ? '#059669' : '#DC2626';
                 echo '<tr>';
-                echo '<td>' . $row['Tanggal'] . '</td>';
-                echo '<td>' . $row['Jenis'] . '</td>';
-                echo '<td>' . $row['Deskripsi'] . '</td>';
-                echo '<td>' . $row['Kategori'] . '</td>';
-                echo '<td>' . $row['Dompet'] . '</td>';
-                echo '<td style="color:' . $color . '">' . number_format($amt, 0, ',', '.') . '</td>';
+                echo '<td>'.$row['Tanggal'].'</td>';
+                echo '<td>'.$row['Jenis'].'</td>';
+                echo '<td>'.$row['Deskripsi'].'</td>';
+                echo '<td>'.$row['Kategori'].'</td>';
+                echo '<td>'.$row['Dompet'].'</td>';
+                echo '<td style="color:'.$color.'">'.number_format($amt, 0, ',', '.').'</td>';
                 echo '</tr>';
             }
             echo '</table></body></html>';

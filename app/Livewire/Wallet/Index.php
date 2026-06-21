@@ -8,15 +8,22 @@ use Livewire\Component;
 class Index extends Component
 {
     public string $name = '';
+
     public string $type = 'cash';
+
     public ?string $transferFrom = null;
+
     public ?string $transferTo = null;
+
     public string $transferAmount = '';
+
     public bool $showCreate = false;
 
     // Edit
     public ?int $editingId = null;
+
     public string $editName = '';
+
     public string $editType = 'cash';
 
     // Delete confirm
@@ -30,6 +37,7 @@ class Index extends Component
 
         if ($walletCount >= $limit) {
             session()->flash('error', 'Batas dompet gratis (2) tercapai. Upgrade ke Pro untuk dompet tak terbatas.');
+
             return;
         }
 
@@ -103,6 +111,7 @@ class Index extends Component
             $wallet->update(['is_active' => false]);
             $this->deletingId = null;
             session()->flash('success', 'Dompet dinonaktifkan (masih ada transaksi).');
+
             return;
         }
 
@@ -114,7 +123,7 @@ class Index extends Component
     public function toggleActive(int $id)
     {
         $wallet = Wallet::where('user_id', auth()->id())->findOrFail($id);
-        $wallet->update(['is_active' => !$wallet->is_active]);
+        $wallet->update(['is_active' => ! $wallet->is_active]);
         session()->flash('success', $wallet->is_active ? 'Dompet diaktifkan.' : 'Dompet dinonaktifkan.');
     }
 
@@ -131,6 +140,7 @@ class Index extends Component
 
         if ($fromWallet->balance < (float) $this->transferAmount) {
             session()->flash('transfer_error', 'Saldo tidak mencukupi.');
+
             return;
         }
 

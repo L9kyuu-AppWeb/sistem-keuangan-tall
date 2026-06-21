@@ -8,6 +8,11 @@
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles
+    @if(config('services.midtrans.is_production'))
+        <script src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    @else
+        <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    @endif
 </head>
 <body class="bg-gray-100 flex justify-center items-start min-h-screen p-4">
     <div class="phone w-full max-w-[390px] min-h-[780px] bg-white rounded-3xl overflow-hidden relative">

@@ -1,4 +1,4 @@
-﻿<div class="flex flex-col min-h-full" x-data="{ selectedPlan: 'yearly' }">
+<div class="flex flex-col min-h-full" x-data="{ selectedPlan: 'yearly' }">
     {{-- Header --}}
     <div style="background: linear-gradient(to bottom, #970747, #7c0639);" class="text-center px-5 pt-13 pb-4 relative overflow-hidden flex-shrink-0">
         <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2 blur-2xl"></div>
@@ -121,24 +121,77 @@
 
         {{-- CTA Buttons --}}
         <div class="mt-6 space-y-3">
+            @if(session()->has('success'))
+                <div class="bg-green-50 border border-green-200 text-green-800 rounded-xl p-3 text-xs text-center font-semibold">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if(session()->has('error'))
+                <div class="bg-red-50 border border-red-200 text-red-800 rounded-xl p-3 text-xs text-center">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             @if(!$alreadyUsedTrial && !$isPro)
-            <button
-                wire:click="openConfirmModal"
-                class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white"
-                :style="selectedPlan === 'yearly' ? 'background:linear-gradient(to right,#970747,#b30855)' : 'background:#970747'"
-                style="box-shadow:0 4px 6px -1px rgba(151,7,71,0.2)">
-                <i class="ti ti-crown"></i> Mulai 7 Hari Gratis
-            </button>
-            <p class="text-center text-xs text-gray-400">Batalkan kapan saja, mudah, tanpa komitmen.</p>
+                {{-- User has never used trial and is not pro --}}
+                <button
+                    wire:click="openConfirmModal"
+                    class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white bg-amber-600 hover:bg-amber-700 transition-colors"
+                    style="box-shadow:0 4px 6px -1px rgba(217,119,6,0.2)">
+                    <i class="ti ti-gift"></i> Mulai 7 Hari Gratis
+                </button>
+                
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink mx-3 text-gray-400 text-xs font-semibold uppercase">Atau Beli Langsung</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
 
+                <button
+                    @click="$wire.pay(selectedPlan)"
+                    class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white transition-all"
+                    :style="selectedPlan === 'yearly' ? 'background:linear-gradient(to right,#970747,#b30855)' : 'background:#970747'"
+                    style="box-shadow:0 4px 6px -1px rgba(151,7,71,0.2)">
+                    <i class="ti ti-credit-card"></i>
+                    <span x-text="selectedPlan === 'yearly' ? 'Beli Pro Tahunan (Rp 249rb)' : 'Beli Pro Bulanan (Rp 29rb)'"></span>
+                </button>
             @elseif($isPro)
-            <p class="text-center text-xs font-medium" style="color:#970747">Masa berlaku: {{ Auth::user()->pro_expires_at?->diffForHumans() ?? '-' }}</p>
+                {{-- User is already Pro --}}
+                <div class="bg-green-50 border border-green-100 rounded-2xl p-4 text-center">
+                    <p class="text-sm font-semibold text-green-800">Masa Pro Aktif</p>
+                    <p class="text-xs text-green-600 mt-1">Berakhir: {{ Auth::user()->pro_expires_at?->format('d M Y') }} ({{ Auth::user()->pro_expires_at?->diffForHumans() }})</p>
+                </div>
 
+                <div class="relative flex py-2 items-center">
+                    <div class="flex-grow border-t border-gray-200"></div>
+                    <span class="flex-shrink mx-3 text-gray-400 text-xs font-semibold uppercase">Perpanjang Langganan</span>
+                    <div class="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <button
+                    @click="$wire.pay(selectedPlan)"
+                    class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white transition-all"
+                    :style="selectedPlan === 'yearly' ? 'background:linear-gradient(to right,#970747,#b30855)' : 'background:#970747'"
+                    style="box-shadow:0 4px 6px -1px rgba(151,7,71,0.2)">
+                    <i class="ti ti-credit-card"></i>
+                    <span x-text="selectedPlan === 'yearly' ? 'Perpanjang Tahunan (Rp 249rb)' : 'Perpanjang Bulanan (Rp 29rb)'"></span>
+                </button>
             @else
-            <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center">
-                <p class="text-sm font-medium text-gray-700">Masa Trial Gratis Anda Sudah Selesai</p>
-                <p class="text-xs text-gray-400 mt-0.5">Pilih salah satu paket di atas untuk melanjutkan fitur Pro</p>
-            </div>
+                {{-- User has used trial, but is not pro --}}
+                <div class="bg-gray-50 border border-gray-100 rounded-2xl p-4 text-center">
+                    <p class="text-sm font-medium text-gray-700">Masa Trial Gratis Anda Sudah Selesai</p>
+                    <p class="text-xs text-gray-400 mt-0.5">Silakan pilih paket pembayaran di bawah untuk terus menggunakan fitur Pro</p>
+                </div>
+
+                <button
+                    @click="$wire.pay(selectedPlan)"
+                    class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white transition-all"
+                    :style="selectedPlan === 'yearly' ? 'background:linear-gradient(to right,#970747,#b30855)' : 'background:#970747'"
+                    style="box-shadow:0 4px 6px -1px rgba(151,7,71,0.2)">
+                    <i class="ti ti-credit-card"></i>
+                    <span x-text="selectedPlan === 'yearly' ? 'Bayar Tahunan (Rp 249rb)' : 'Bayar Bulanan (Rp 29rb)'"></span>
+                </button>
             @endif
 
             <div class="flex gap-3 p-3.5 bg-gray-50 rounded-2xl border border-gray-100 mt-4">
@@ -202,4 +255,26 @@
         </div>
     </div>
     @endif
+
+    <script>
+        document.addEventListener('livewire:init', () => {
+            Livewire.on('initiate-payment', (event) => {
+                const token = event.token;
+                window.snap.pay(token, {
+                    onSuccess: function(result) {
+                        Livewire.dispatch('payment-completed', { result: result });
+                    },
+                    onPending: function(result) {
+                        alert('Pembayaran tertunda. Silakan selesaikan pembayaran Anda.');
+                    },
+                    onError: function(result) {
+                        alert('Pembayaran gagal. Silakan coba lagi.');
+                    },
+                    onClose: function() {
+                        alert('Anda menutup popup pembayaran sebelum menyelesaikan transaksi.');
+                    }
+                });
+            });
+        });
+    </script>
 </div>

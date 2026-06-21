@@ -2,12 +2,15 @@
 
 namespace App\Livewire;
 
+use Illuminate\Support\Facades\Hash;
 use Livewire\Component;
 
 class ChangePassword extends Component
 {
     public string $current_password = '';
+
     public string $password = '';
+
     public string $password_confirmation = '';
 
     public function save(): void
@@ -19,8 +22,9 @@ class ChangePassword extends Component
 
         $user = auth()->user();
 
-        if (!\Illuminate\Support\Facades\Hash::check($this->current_password, $user->password)) {
+        if (! Hash::check($this->current_password, $user->password)) {
             session()->flash('error', 'Password lama salah.');
+
             return;
         }
 

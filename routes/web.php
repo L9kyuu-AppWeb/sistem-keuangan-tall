@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MidtransWebhookController;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
 use App\Livewire\Budget;
@@ -31,6 +32,8 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
     Route::get('/register', Register::class)->name('register');
 });
+
+Route::post('/midtrans/webhook', [MidtransWebhookController::class, 'handleNotification'])->name('midtrans.webhook');
 
 Route::middleware('auth')->group(function () {
     Route::get('/app/dashboard', Dashboard::class)->name('dashboard');

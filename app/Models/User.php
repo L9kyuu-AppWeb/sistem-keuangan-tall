@@ -79,7 +79,6 @@ class User extends Authenticatable
         return $this->is_pro && $this->pro_expires_at?->isFuture();
     }
 
-
     public function walletLimit(): int
     {
         return $this->isPro() ? PHP_INT_MAX : 2;

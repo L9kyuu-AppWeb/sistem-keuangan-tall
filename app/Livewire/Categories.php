@@ -2,14 +2,17 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Category;
+use Livewire\Component;
 
 class Categories extends Component
 {
     public string $name = '';
+
     public string $icon = 'dots';
+
     public ?int $editingId = null;
+
     public bool $showForm = false;
 
     protected function rules(): array
@@ -37,8 +40,9 @@ class Categories extends Component
 
     public function save(): void
     {
-        if (!auth()->user()->isPro()) {
+        if (! auth()->user()->isPro()) {
             session()->flash('error', 'Buat kategori kustom hanya untuk akun Pro.');
+
             return;
         }
 
@@ -66,7 +70,7 @@ class Categories extends Component
     public function delete(int $id): void
     {
         $cat = Category::where('id', $id)->where('user_id', auth()->id())->first();
-        if ($cat && !$cat->is_system) {
+        if ($cat && ! $cat->is_system) {
             $cat->delete();
             session()->flash('success', 'Kategori dihapus.');
             $this->dispatch('refresh');

@@ -2,28 +2,32 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\FamilyGroup;
+use App\Models\Transaction;
+use Livewire\Component;
 
 class Family extends Component
 {
     public string $joinCode = '';
+
     public string $newGroupName = '';
 
     public function createGroup(): void
     {
-        if (!auth()->user()->isPro()) {
+        if (! auth()->user()->isPro()) {
             session()->flash('error', 'Family Sync hanya untuk akun Pro.');
+
             return;
         }
         if (auth()->user()->family_group_id) {
             session()->flash('error', 'Anda sudah tergabung di sebuah grup.');
+
             return;
         }
 
         $code = FamilyGroup::generateCode();
         $group = FamilyGroup::create([
-            'name' => 'Keluarga ' . auth()->user()->name,
+            'name' => 'Keluarga '.auth()->user()->name,
             'code' => $code,
         ]);
 
@@ -32,25 +36,28 @@ class Family extends Component
             'family_role' => 'owner',
         ]);
 
-        session()->flash('success', 'Grup keluarga dibuat! Kode: ' . $code);
+        session()->flash('success', 'Grup keluarga dibuat! Kode: '.$code);
     }
 
     public function joinGroup(): void
     {
-        if (!auth()->user()->isPro()) {
+        if (! auth()->user()->isPro()) {
             session()->flash('error', 'Family Sync hanya untuk akun Pro.');
+
             return;
         }
         if (auth()->user()->family_group_id) {
             session()->flash('error', 'Anda sudah tergabung di sebuah grup. Keluar dulu.');
+
             return;
         }
 
         $code = strtoupper(trim($this->joinCode));
         $group = FamilyGroup::where('code', $code)->first();
 
-        if (!$group) {
+        if (! $group) {
             session()->flash('error', 'Kode tidak ditemukan. Periksa kode yang diberikan.');
+
             return;
         }
 
@@ -60,13 +67,15 @@ class Family extends Component
         ]);
 
         $this->joinCode = '';
-        session()->flash('success', 'Berhasil bergabung dengan grup ' . $group->name . '!');
+        session()->flash('success', 'Berhasil bergabung dengan grup '.$group->name.'!');
     }
 
     public function leaveGroup(): void
     {
         $user = auth()->user();
-        if (!$user->family_group_id) return;
+        if (! $user->family_group_id) {
+            return;
+        }
 
         // If owner, delete whole group
         if ($user->family_role === 'owner') {
@@ -98,7 +107,7 @@ class Family extends Component
 
         if ($group) {
             $memberIds = $members->pluck('id')->toArray();
-            $txns = \App\Models\Transaction::with(['wallet', 'category', 'user'])
+            $txns = Transaction::with(['wallet', 'category', 'user'])
                 ->whereIn('user_id', $memberIds)
                 ->latest()
                 ->take(10)

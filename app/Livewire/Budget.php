@@ -2,14 +2,16 @@
 
 namespace App\Livewire;
 
-use Livewire\Component;
 use App\Models\Budget as BudgetModel;
 use App\Models\Category;
+use Livewire\Component;
 
 class Budget extends Component
 {
     public float $generalAmount = 0;
+
     public array $categoryAmounts = [];
+
     public bool $editing = false;
 
     public function mount(): void
