@@ -21,6 +21,10 @@
         <div class="mt-3 inline-flex items-center gap-1.5 bg-green-500/20 border border-green-400/30 text-green-200 text-xs px-3 py-1.5 rounded-full">
             <i class="ti ti-crown"></i> Pro Aktif
         </div>
+        @else
+        <div class="mt-3 inline-flex items-center gap-1.5 bg-amber-500/20 border border-amber-400/30 text-white text-xs px-3 py-1.5 rounded-full animate-bounce">
+            <i class="ti ti-gift"></i> Coba Pro 7 Hari Gratis
+        </div>
         @endif
 
         {{-- Pricing Cards --}}

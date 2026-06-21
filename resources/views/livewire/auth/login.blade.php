@@ -17,14 +17,14 @@
         <form wire:submit.prevent="login">
             <div class="mb-[14px]">
                 <label class="text-[13px] text-gray-600 mb-[5px] block">Email</label>
-                <input wire:model.live="email" type="email" placeholder="nama@email.com"
+                <input wire:model="email" type="email" placeholder="nama@email.com"
                     class="w-full px-[14px] py-3 border border-gray-300 rounded-xl text-[15px] text-gray-900 outline-none focus:border-[#7C3AED] transition @error('email') border-red-400 @enderror">
                 @error('email') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
 
             <div class="mb-[14px]">
                 <label class="text-[13px] text-gray-600 mb-[5px] block">Kata Sandi</label>
-                <input wire:model.live="password" type="password" placeholder="••••••••"
+                <input wire:model="password" type="password" placeholder="••••••••"
                     class="w-full px-[14px] py-3 border border-gray-300 rounded-xl text-[15px] text-gray-900 outline-none focus:border-[#7C3AED] transition @error('password') border-red-400 @enderror">
                 @error('password') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
