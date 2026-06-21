@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'is_pro', 'pro_expires_at', 'family_group_id', 'family_role'])]
+#[Fillable(['name', 'email', 'password', 'is_pro', 'pro_expires_at', 'trial_used_at', 'family_group_id', 'family_role'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -63,10 +63,22 @@ class User extends Authenticatable
         return $this->belongsTo(FamilyGroup::class);
     }
 
+    public function hasUsedTrial(): bool
+    {
+        return $this->trial_used_at !== null;
+    }
+
+    public function markTrialUsed(): void
+    {
+        $this->trial_used_at = now();
+        $this->save();
+    }
+
     public function isPro(): bool
     {
         return $this->is_pro && $this->pro_expires_at?->isFuture();
     }
+
 
     public function walletLimit(): int
     {
