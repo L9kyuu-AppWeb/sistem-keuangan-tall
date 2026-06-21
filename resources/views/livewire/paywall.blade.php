@@ -140,11 +140,11 @@
             @if(!$alreadyUsedTrial && !$isPro)
                 {{-- User has never used trial and is not pro --}}
                 <button
-                    wire:click="openConfirmModal"
-                    class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white bg-amber-600 hover:bg-amber-700 transition-colors"
-                    style="box-shadow:0 4px 6px -1px rgba(217,119,6,0.2)">
-                    <i class="ti ti-gift"></i> Mulai 7 Hari Gratis
-                </button>
+    wire:click="openConfirmModal"
+    class="flex items-center justify-center gap-2 w-full py-4 rounded-xl text-base font-bold text-white transition-colors"
+    style="background-color: #d97706; box-shadow:0 4px 6px -1px rgba(217,119,6,0.2)">
+    <i class="ti ti-gift"></i> <span>Mulai 7 Hari Gratis</span>
+</button>
                 
                 <div class="relative flex py-2 items-center">
                     <div class="flex-grow border-t border-gray-200"></div>
