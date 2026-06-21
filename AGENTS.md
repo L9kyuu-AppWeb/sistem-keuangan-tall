@@ -49,6 +49,7 @@ A family finance management app — track income/expenses, manage wallets, budge
 | `/app/change-password` | `ChangePassword` | Change password |
 | `/app/help` | `Help` | Help center |
 | `/app/paywall` | `Paywall` | Pro subscription |
+| `/midtrans/webhook` | `MidtransWebhookController` | Webhook callback (unauthenticated, CSRF excluded) |
 
 All `app/*` routes are grouped under `Route::middleware('auth')`.
 
@@ -101,6 +102,12 @@ All full-page components (extend `Component`, use `->layout('layouts.app')`), ex
 
 - **Free:** 2 wallets max, system categories only, general budget, no export
 - **Pro:** unlimited wallets, custom categories, budget per category, family sync, export (CSV/Excel/PDF)
+- **Midtrans Subscription Payment Integration:**
+  - Monthly subscription (Rp 29,000) and Yearly subscription (Rp 249,000) are integrated via Midtrans Snap.
+  - Subscription page: `/app/paywall`.
+  - Midtrans Webhook: `/midtrans/webhook` validates requests via SHA512 signature key and updates user subscription.
+  - Redirects users back to `/app/paywall` with a success session banner.
+  - SSL validation is automatically bypassed only in local sandbox environments (`! MIDTRANS_IS_PRODUCTION`) using `withoutVerifying()`.
 - `User::isPro()`: `is_pro && (!pro_expires_at || pro_expires_at->isFuture())`
 - Test accounts: `budi@email.com` (FREE), `pro@famibalance.com` (PRO, exp 2027-06-20)
 - Both passwords: `password123` (migrated hashed)
